@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6a8c2">
+  <title>Kejutan Rahsia | 127.0.0.1:8000</title> <!-- EDIT TEKS -->
+  <style>
+    :root {
+      color-scheme: light;
+      --rose: #ee789f;
+      --pink: #f6a8c2;
+      --blush: #ffe4ec;
+      --petal: #fff7f9;
+      --berry: #712b4c;
+      --wine: #51233b;
+      --coral: #e85d78;
+      --gold: #f6c76b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--wine);
+      background-color: var(--pink);
+      background-image: radial-gradient(ellipse at 12% 18%, rgba(255,255,255,.55) 0 1px, transparent 2px), radial-gradient(ellipse at 78% 72%, rgba(255,255,255,.38) 0 1px, transparent 2px), linear-gradient(135deg, #f8b5ca, #ee8eae 52%, #f8c3d2);
+      background-size: 34px 34px, 42px 42px, auto;
+      font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    }
+
+    button { font: inherit; }
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 28px clamp(18px, 5vw, 72px) 36px;
+    }
+    .screen.active { display: flex; flex-direction: column; }
+    .name-screen {
+      justify-content: center;
+      align-items: center;
+      color: #fff7f9;
+      background: #070608;
+    }
+    .name-entry { width: min(520px, 100%); margin: auto; }
+    .name-title { margin: 0 0 24px; color: #fff7f9; font-family: "Bodoni 72", "Didot", "Times New Roman", serif; font-size: 38px; font-weight: 500; line-height: 1.1; }
+    .name-form { display: grid; gap: 12px; }
+    .name-form label { color: #f6a8c2; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .name-form input { width: 100%; min-height: 56px; padding: 0 16px; border: 1px solid #665660; border-radius: 2px; color: #fff; background: #141115; font: inherit; font-size: 16px; }
+    .name-form input::placeholder { color: #9c9099; }
+    .name-form input:focus-visible { outline: 2px solid #f6a8c2; outline-offset: 3px; }
+    .name-screen .action { margin-top: 8px; border-color: #f6a8c2; color: #170c12; background: #f6a8c2; }
+    .name-error { min-height: 20px; margin: 0; color: #ffb6c8; font-size: 13px; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--berry);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .topline-mark { display: flex; align-items: center; gap: 9px; }
+    .topline-mark::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 4px rgba(255,255,255,.4); }
+    .date-note { font-family: Georgia, serif; font-size: 15px; font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+    .home-content {
+      width: min(1120px, 100%);
+      margin: auto;
+      padding: 65px 0 80px;
+      position: relative;
+      animation: arrive .7s both;
+    }
+    .eyebrow {
+      margin: 0 0 20px 8px;
+      color: var(--berry);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 940px;
+      margin: 0;
+      color: var(--petal);
+      font-family: "Bodoni 72", "Didot", "Times New Roman", serif;
+      font-size: clamp(68px, 13vw, 168px);
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: .78;
+      text-shadow: 0 5px 0 rgba(151, 54, 91, .12);
+    }
+    h1 span { display: block; color: var(--berry); font-style: italic; font-size: .73em; line-height: 1.13; overflow-wrap: anywhere; }
+    .birthday-rule { display: flex; align-items: center; gap: 12px; width: min(500px, 90%); margin: 35px 0 30px 8px; color: var(--berry); }
+    .birthday-rule::before, .birthday-rule::after { content: ""; height: 1px; flex: 1; background: rgba(113,43,76,.32); }
+    .birthday-rule span { font-size: 18px; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding-left: 8px; }
+    .action {
+      min-height: 54px;
+      padding: 0 25px;
+      border: 1px solid var(--berry);
+      border-radius: 3px;
+      color: var(--petal);
+      background: var(--berry);
+      box-shadow: 0 5px 0 rgba(81,35,59,.13);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .action:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(81,35,59,.13); }
+    .action:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+    .action-secondary { color: var(--berry); background: rgba(255,247,249,.42); }
+    .home-note { width: min(900px, calc(100% - 240px)); margin: 30px 0 0 8px; color: rgba(81,35,59,.8); font-family: Georgia, serif; font-size: 19px; font-style: italic; line-height: 1.5; }
+    .flower {
+      position: absolute;
+      right: 3%;
+      top: 20%;
+      width: clamp(100px, 19vw, 245px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(255,247,249,.7);
+      border-radius: 50%;
+      opacity: .56;
+      animation: turn 36s linear infinite;
+    }
+    .flower::before, .flower::after { content: ""; position: absolute; inset: 18%; border: inherit; border-radius: 50%; transform: rotate(45deg); }
+    .flower::after { transform: rotate(90deg); }
+    .flower-core { position: absolute; inset: 42%; z-index: 1; border-radius: 50%; background: var(--petal); }
+    .party-garland { position: absolute; top: 2px; left: 3%; right: 3%; height: 32px; display: flex; justify-content: space-between; border-top: 1px solid rgba(113,43,76,.38); pointer-events: none; }
+    .party-garland span { width: 0; height: 0; margin-top: 1px; border-top: 20px solid #fff7f9; border-right: 11px solid transparent; border-left: 11px solid transparent; transform-origin: 50% 0; animation: sway 3.2s ease-in-out infinite; filter: drop-shadow(0 2px 1px rgba(113,43,76,.12)); }
+    .party-garland span:nth-child(3n + 2) { border-top-color: #e85d78; animation-delay: -.8s; }
+    .party-garland span:nth-child(3n) { border-top-color: #ffe08a; animation-delay: -1.6s; }
+    .party-garland span:nth-child(4n) { border-top-color: #a8406b; animation-delay: -2.2s; }
+    .party-cake { position: absolute; right: 2%; bottom: -16px; width: 190px; height: 210px; pointer-events: none; }
+    .party-cake span { position: absolute; display: block; }
+    .party-plate { right: 4px; bottom: 11px; width: 176px; height: 22px; border: 2px solid rgba(255,247,249,.85); border-radius: 50%; background: rgba(255,247,249,.28); }
+    .party-body { right: 27px; bottom: 29px; width: 130px; height: 70px; border-radius: 8px 8px 28px 28px; background: linear-gradient(90deg, #fff4f5, #ffd8e4 54%, #f5b5cb); box-shadow: inset 0 -8px 0 rgba(207,89,129,.2), 0 8px 16px rgba(113,43,76,.14); }
+    .party-icing { right: 24px; bottom: 82px; width: 136px; height: 23px; border-radius: 50%; background: #fff6f5; box-shadow: inset 0 -5px 0 #f1b1c7; }
+    .party-candle { right: 88px; bottom: 103px; width: 10px; height: 37px; border-radius: 3px 3px 1px 1px; background: repeating-linear-gradient(135deg, #fff7f9 0 5px, #e85d78 5px 9px); }
+    .party-flame { right: 89px; bottom: 141px; width: 9px; height: 15px; border-radius: 55% 45% 55% 45%; background: #ffd36d; transform: rotate(8deg); box-shadow: 0 0 15px rgba(255,211,109,.8); }
+    .party-balloon { width: 38px; height: 50px; border-radius: 50% 50% 46% 46%; box-shadow: inset -6px -4px 0 rgba(113,43,76,.12); animation: bob 3.2s ease-in-out infinite; }
+    .party-balloon::after { content: ""; position: absolute; left: 18px; top: 49px; width: 1px; height: 78px; background: rgba(113,43,76,.45); transform: rotate(5deg); transform-origin: top; }
+    .party-balloon-one { right: 13px; top: 16px; background: #e85d78; }
+    .party-balloon-two { right: 58px; top: 2px; background: #ffe08a; animation-delay: -.8s; }
+    .party-balloon-three { right: 103px; top: 24px; background: #fff7f9; animation-delay: -1.5s; }
+    .party-spark { color: #fff7f9; font-size: 19px; }
+    .party-spark-one { top: 82px; left: 4px; }
+    .party-spark-two { top: 131px; right: 0; color: #ffe08a; }
+
+    .celebration { padding-top: 20px; }
+    .celebration .topline { width: min(1120px, 100%); margin: 0 auto 18px; }
+    .celebration-garland { width: min(1120px, 100%); height: 29px; margin: 0 auto 10px; display: flex; justify-content: space-around; flex: none; border-top: 1px solid rgba(113,43,76,.38); pointer-events: none; }
+    .celebration-garland span { width: 0; height: 0; margin-top: 1px; border-top: 18px solid #fff7f9; border-right: 10px solid transparent; border-left: 10px solid transparent; transform-origin: 50% 0; animation: sway 3.2s ease-in-out infinite; filter: drop-shadow(0 2px 1px rgba(113,43,76,.12)); }
+    .celebration-garland span:nth-child(3n + 2) { border-top-color: #e85d78; animation-delay: -.8s; }
+    .celebration-garland span:nth-child(3n) { border-top-color: #ffe08a; animation-delay: -1.6s; }
+    .celebration-garland span:nth-child(4n) { border-top-color: #a8406b; animation-delay: -2.2s; }
+    .stage {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 240px;
+      align-items: center;
+      gap: clamp(22px, 4vw, 56px);
+      flex: 1;
+      animation: arrive .55s both;
+    }
+    .camera-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 7px solid rgba(255,247,249,.78);
+      background: #d66b8c;
+      box-shadow: 0 18px 50px rgba(102,35,65,.2);
+    }
+    .camera-frame video, .camera-frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .camera-frame canvas { pointer-events: none; }
+    .birthday-stickers { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+    .birthday-sticker { position: absolute; max-width: 20%; max-height: 50%; padding: 0; border: none; border-radius: 0; background: transparent; box-shadow: none; object-fit: cover; animation: sticker-pop .45s cubic-bezier(.2,.8,.25,1.2) both; }
+    .birthday-sticker-for-you { top: 16px; left: 16px; width: 19%; aspect-ratio: 1; object-position: center 18%; clip-path: inset(8% 8% 8% 8% round 12px); transform: rotate(-6deg); }
+    .birthday-sticker-best { top: 16px; right: 16px; width: 19%; height: auto; object-position: center 25%; clip-path: inset(20% 10% 10% 10% round 12px); transform: rotate(5deg); }
+    .camera-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 12px;
+      padding: 24px;
+      color: var(--petal);
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 42%, rgba(255,247,249,.2), transparent 55%), linear-gradient(145deg, #d96f92, #9e4569);
+    }
+    .camera-placeholder[hidden] { display: none; }
+    .camera-icon { font-size: 42px; }
+    .camera-placeholder strong { font-family: Georgia, serif; font-size: 24px; font-weight: 400; }
+    .camera-placeholder span { max-width: 330px; font-size: 13px; line-height: 1.6; }
+    .instructions { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: 16px 0; }
+    .step-number { color: var(--berry); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h2 { margin: 14px 0 13px; color: var(--petal); font-family: "Bodoni 72", "Didot", "Times New Roman", serif; font-size: clamp(38px, 5vw, 62px); font-weight: 500; line-height: .97; }
+    .instruction-copy { margin: 0; max-width: 270px; color: var(--berry); font-size: 15px; line-height: 1.65; }
+    .status { min-height: 42px; margin: 22px 0 16px; color: var(--wine); font-size: 13px; line-height: 1.5; }
+    .stage-button { width: 100%; margin-top: 7px; }
+    .song-player { width: 100%; margin-top: 14px; }
+    .song-player audio { display: block; width: 100%; accent-color: var(--berry); }
+    .song-download { align-self: flex-start; margin-top: 8px; color: var(--berry); font-size: 13px; text-underline-offset: 4px; }
+    .song-download:not(.hidden) { display: inline-block; }
+    .back-button { align-self: flex-start; margin-top: 14px; padding: 9px 0; border: 0; color: var(--berry); background: transparent; cursor: pointer; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+    .back-button:hover { color: var(--wine); }
+    .footer-note { width: min(1120px, 100%); margin: 16px auto 0; color: rgba(81,35,59,.72); font-size: 11px; line-height: 1.5; }
+    .hidden { display: none !important; }
+
+    @keyframes arrive { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes turn { to { transform: rotate(360deg); } }
+    @keyframes bob { 50% { translate: 0 -7px; } }
+    @keyframes sway { 50% { transform: rotate(4deg) translateY(2px); } }
+    @keyframes sticker-pop { from { opacity: 0; scale: .72; } to { opacity: 1; scale: 1; } }
+    @media (max-width: 860px) {
+      .screen { padding: 20px 18px 24px; }
+      .home-content { padding: 80px 0; }
+      .topline { flex-wrap: wrap; row-gap: 8px; }
+      .topline .date-note { margin-left: auto; text-align: right; }
+      .flower { top: 2%; right: 1%; opacity: .38; }
+      .party-cake { display: none; }
+      .home-note { width: auto; }
+      .stage { grid-template-columns: 1fr; align-content: center; gap: 22px; }
+      .camera-frame { aspect-ratio: 4 / 3; border-width: 5px; }
+      .instructions { padding: 0 3px; }
+      h2 { max-width: 390px; margin-top: 9px; font-size: 43px; }
+      .instruction-copy { max-width: 420px; }
+      .status { min-height: auto; margin: 12px 0 8px; }
+      .stage-button { width: auto; align-self: flex-start; min-width: min(180px, 100%); }
+      .back-button { margin-top: 8px; }
+      .footer-note { margin-top: 10px; }
+    }
+    @media (max-height: 600px) {
+      .screen { padding-top: 14px; padding-bottom: 16px; }
+      .home-content { padding-top: 18px; padding-bottom: 24px; }
+      .eyebrow { margin-bottom: 12px; }
+      h1 { font-size: clamp(52px, 11vw, 96px); }
+      .birthday-rule { margin-top: 18px; margin-bottom: 20px; }
+      .home-note { margin-top: 18px; }
+    }
+    @media (max-width: 560px) {
+      .screen { padding: 18px 14px 22px; }
+      .home-content { padding: 54px 0; }
+      .home-content h1 { font-size: 58px; line-height: .88; }
+      .home-content h1 span { font-size: .68em; }
+      .home-note { font-size: 17px; }
+      .button-row { gap: 10px; padding-left: 4px; }
+      .button-row .action { min-height: 48px; padding: 0 16px; }
+      .celebration .topline { font-size: 10px; }
+      .celebration-garland { height: 25px; margin-bottom: 8px; }
+      .celebration-garland span { border-right-width: 8px; border-left-width: 8px; border-top-width: 15px; }
+      .camera-frame { width: 100%; }
+      .birthday-sticker-for-you { top: 10px; left: 10px; }
+      .birthday-sticker-best { top: 10px; right: 10px; }
+      .instructions h2 { font-size: 38px; }
+      .footer-note { font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="screen name-screen active" id="name-screen" aria-labelledby="name-title">
+      <div class="name-entry">
+        <h1 class="name-title" id="name-title">Masukkan nama anda</h1> <!-- EDIT TEKS -->
+        <form class="name-form" id="name-form">
+          <input id="name-input" name="name" type="text" autocomplete="given-name" maxlength="40" aria-labelledby="name-title" required>
+          <button class="action" type="submit">Teruskan ↗</button> <!-- EDIT TEKS -->
+          <p class="name-error" id="name-error" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="screen" id="home" aria-labelledby="main-title" aria-hidden="true">
+      <header class="topline">
+        <div class="topline-mark">IT IS YOUR BIRTHDAY!</div> <!-- EDIT TEKS -->
+        <div class="date-note">Dihasilkan khas dengan penuh kasih</div> <!-- EDIT TEKS -->
+      </header>
+      <div class="home-content">
+        <div class="flower" aria-hidden="true"><i class="flower-core"></i></div>
+        <div class="party-garland" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="party-cake" aria-hidden="true">
+          <span class="party-balloon party-balloon-one"></span>
+          <span class="party-balloon party-balloon-two"></span>
+          <span class="party-balloon party-balloon-three"></span>
+          <span class="party-spark party-spark-one">✦</span>
+          <span class="party-spark party-spark-two">✧</span>
+          <span class="party-plate"></span>
+          <span class="party-body"></span>
+          <span class="party-icing"></span>
+          <span class="party-candle"></span>
+          <span class="party-flame"></span>
+        </div>
+        <p class="eyebrow">THIS IS YOUR DAY!</p> <!-- EDIT TEKS -->
+        <h1 id="main-title">HAPPY <span>BIRTHDAY, {{nama}}!</span></h1> <!-- EDIT TEKS -->
+        <div class="birthday-rule" aria-hidden="true"><span>✿</span></div>
+        <div class="button-row">
+          <button class="action" id="continue-button" type="button">Teruskan <span aria-hidden="true">↗</span></button> <!-- EDIT TEKS -->
+          <button class="action action-secondary" id="runaway-button" type="button">Hmm! Majok</button> <!-- EDIT TEKS -->
+        </div>
+        <p class="home-note">Selamat hari lahir {{nama}}! Semoga dipanjangkan umur, dimurahkan rezeki and success selalu! Semoga impian yang diimpikan menjadi nyata suatu hari nanti, In Shaa Allah.</p> <!-- EDIT TEKS -->
+      </div>
+    </section>
+
+    <section class="screen celebration" id="celebration" aria-labelledby="celebration-title" aria-hidden="true">
+      <header class="topline">
+        <div class="topline-mark">It's time to blow up a candle!</div> <!-- EDIT TEKS -->
+      </header>
+      <div class="celebration-garland" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="stage">
+        <div class="camera-frame" aria-label="Pratonton kamera hari jadi"> <!-- EDIT TEKS -->
+          <video id="camera-video" autoplay muted playsinline></video>
+          <canvas id="effects-canvas" aria-hidden="true"></canvas>
+          <div class="birthday-stickers hidden" id="birthday-stickers" aria-hidden="true">
+            <img class="birthday-sticker birthday-sticker-for-you" src="sticker-for-you.jpg" alt="Anak kucing dengan bunga merah jambu dan tulisan For you">
+            <img class="birthday-sticker birthday-sticker-best" src="sticker-best.jpg?v=2" alt="Anak kucing memberi bunga dengan mesej untuk awak">
+          </div>
+          <div class="camera-placeholder" id="camera-placeholder">
+            <div class="camera-icon" aria-hidden="true">✿</div>
+            <strong>Kejutan awak hampir siap</strong> <!-- EDIT TEKS -->
+            <span>Benarkan akses kamera untuk mencuba topi hari jadi dan melihat kek serta lilin.</span> <!-- EDIT TEKS -->
+          </div>
+        </div>
+        <div class="instructions">
+          <h2 id="celebration-title">Sila tiup lilin</h2> <!-- EDIT TEKS -->
+          <p class="instruction-copy">Tarik nafas dalam-dalam lepastu tiup kuat-kuat!</p> <!-- EDIT TEKS -->
+          <p class="status" id="status" role="status" aria-live="polite">Sedang membuka kamera…</p> <!-- EDIT TEKS -->
+          <button class="action stage-button hidden" id="blow-button" type="button">Saya dah tiup lilin ✨</button> <!-- EDIT TEKS -->
+          <button class="action stage-button hidden" id="camera-retry" type="button">Cuba buka kamera lagi</button> <!-- EDIT TEKS -->
+          <div class="song-player hidden" id="song-player" aria-label="Lagu hari jadi"> <!-- EDIT TEKS -->
+            <audio id="birthday-audio" controls preload="auto" src="birthday-song.mp3"></audio>
+          </div>
+          <a class="song-download hidden" id="download-song" href="birthday-song.mp3" download>Muat turun lagu hari jadi ↓</a> <!-- EDIT TEKS -->
+          <button class="back-button" id="back-button" type="button">← Kembali ke kad hari jadi</button> <!-- EDIT TEKS -->
+        </div>
+      </div>
+      <p class="footer-note">Kamera dan mikrofon hanya digunakan pada peranti ini. Mikrofon mendengar tiupan untuk memadamkan api lilin.</p> <!-- EDIT TEKS -->
+    </section>
+  </main>
+
+  <script>
+    document.title = `Kejutan Rahsia | ${window.location.host}`;
+    const nameScreen = document.querySelector("#name-screen");
+    const nameForm = document.querySelector("#name-form");
+    const nameInput = document.querySelector("#name-input");
+    const nameError = document.querySelector("#name-error");
+    const home = document.querySelector("#home");
+    const celebration = document.querySelector("#celebration");
+    const video = document.querySelector("#camera-video");
+    const canvas = document.querySelector("#effects-canvas");
+    const birthdayStickers = document.querySelector("#birthday-stickers");
+    const context = canvas.getContext("2d");
+    const status = document.querySelector("#status");
+    const placeholder = document.querySelector("#camera-placeholder");
+    const blowButton = document.querySelector("#blow-button");
+    const retryButton = document.querySelector("#camera-retry");
+    const songPlayer = document.querySelector("#song-player");
+    const birthdayAudio = document.querySelector("#birthday-audio");
+    const downloadSong = document.querySelector("#download-song");
+    let cameraStream;
+    let microphoneStream;
+    let animationFrame;
+    let audioContext;
+    let faceLandmarker;
+    let trackedHead;
+    let songStarted = false;
+    let candleOut = false;
+    let candleOutAt = 0;
+    let noiseFrames = 0;
+    let ambientVolume = .025;
+    let confetti = [];
+    let recipientName = "";
+    const cakeSprinkles = Array.from({ length: 65 }, () => ({ angle: Math.random() * Math.PI * 2, radius: Math.sqrt(Math.random()) }));
+
+    function showScreen(screen) {
+      for (const page of [nameScreen, home, celebration]) {
+        const isActive = page === screen;
+        page.classList.toggle("active", isActive);
+        page.setAttribute("aria-hidden", String(!isActive));
+      }
+    }
+
+    function personalizePage(name) {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        textNode.nodeValue = textNode.nodeValue.replaceAll("{{nama}}", name);
+      }
+      for (const element of document.querySelectorAll("[aria-label]")) {
+        element.setAttribute("aria-label", element.getAttribute("aria-label").replaceAll("{{nama}}", name));
+      }
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    nameForm.addEventListener("submit", event => {
+      event.preventDefault();
+      recipientName = nameInput.value.trim();
+      if (!recipientName) {
+        nameError.textContent = "Nama perlu diisi dulu.";
+        nameInput.focus();
+        return;
+      }
+      nameError.textContent = "";
+      personalizePage(recipientName);
+      showScreen(home);
+    });
+
+    document.querySelector("#continue-button").addEventListener("click", async () => {
+      showScreen(celebration);
+      songStarted = false;
+      candleOut = false;
+      candleOutAt = 0;
+      trackedHead = null;
+      noiseFrames = 0;
+      birthdayStickers.classList.add("hidden");
+      blowButton.classList.add("hidden");
+      retryButton.classList.add("hidden");
+      songPlayer.classList.add("hidden");
+      downloadSong.classList.add("hidden");
+      birthdayAudio.pause();
+      birthdayAudio.currentTime = 0;
+      setStatus("Sedang membuka kamera…"); // EDIT TEKS
+      try {
+        audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === "suspended") await audioContext.resume();
+      } catch (_) {
+        audioContext = null;
+      }
+      await startCamera();
+    });
+
+    document.querySelector("#back-button").addEventListener("click", () => {
+      stopMedia();
+      showScreen(home);
+    });
+
+    async function startCamera() {
+      stopMedia();
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setStatus("Kamera memerlukan pelayar moden dan sambungan selamat (HTTPS atau localhost)."); // EDIT TEKS
+        retryButton.classList.remove("hidden");
+        blowButton.classList.remove("hidden");
+        return;
+      }
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        video.srcObject = cameraStream;
+        await video.play();
+        placeholder.hidden = true;
+        resizeCanvas();
+        confetti = [];
+        const faceTrackingReady = await setupFaceTracker();
+        drawEffects();
+        if (!songStarted) {
+          setStatus(faceTrackingReady
+            ? "Kamera sedia. Benarkan mikrofon supaya saya dapat mengesan tiupan." // EDIT TEKS
+            : "Kamera sedia, tetapi penjejakan muka memerlukan internet. Benarkan mikrofon untuk mengesan tiupan."); // EDIT TEKS
+        }
+      } catch (_) {
+        placeholder.hidden = false;
+        setStatus("Akses kamera tidak tersedia. Cuba lagi atau gunakan butang di bawah."); // EDIT TEKS
+        retryButton.classList.remove("hidden");
+        blowButton.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false }, video: false });
+        listenForBlow(microphoneStream);
+        if (!songStarted) setStatus("Mikrofon sedia. Tiup ke arah lilin!"); // EDIT TEKS
+      } catch (_) {
+        setStatus("Akses mikrofon tiada. Tiup lilin, kemudian tekan butang untuk memainkan lagu."); // EDIT TEKS
+        blowButton.classList.remove("hidden");
+      }
+    }
+
+    async function setupFaceTracker() {
+      try {
+        const vision = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22");
+        const files = await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm");
+        for (const delegate of ["GPU", "CPU"]) {
+          try {
+            faceLandmarker = await vision.FaceLandmarker.createFromOptions(files, {
+              baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task", delegate },
+              runningMode: "VIDEO",
+              numFaces: 1
+            });
+            return true;
+          } catch (_) {
+            faceLandmarker?.close();
+            faceLandmarker = null;
+          }
+        }
+        return false;
+      } catch (_) {
+        faceLandmarker = null;
+        return false;
+      }
+    }
+
+    function resizeCanvas() {
+      const width = video.videoWidth || 640;
+      const height = video.videoHeight || 480;
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+    }
+
+    function makeConfetti(randomize = false) {
+      const colors = ["#fff5f7", "#ffe08a", "#ea557d", "#a8406b", "#fff"];
+      return {
+        x: Math.random() * (canvas.width || 640),
+        y: randomize ? Math.random() * (canvas.height || 480) : -12,
+        size: 3 + Math.random() * 6,
+        speed: 1 + Math.random() * 2.4,
+        drift: (Math.random() - .5) * 1.3,
+        spin: Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      };
+    }
+
+    function drawEffects() {
+      if (!canvas.width || !canvas.height) resizeCanvas();
+      const width = canvas.width;
+      const height = canvas.height;
+      const scale = width / 640;
+      const now = performance.now();
+      context.clearRect(0, 0, width, height);
+
+      if (faceLandmarker && video.readyState >= 2) {
+        const result = faceLandmarker.detectForVideo(video, now);
+        const points = result.faceLandmarks?.[0];
+        if (points) {
+          const top = points[10];
+          const left = points[127];
+          const right = points[356];
+          const eyeLeft = points[33];
+          const eyeRight = points[263];
+          const faceWidth = Math.hypot((right.x - left.x) * width, (right.y - left.y) * height);
+          const target = { x: top.x * width, y: top.y * height, width: faceWidth, angle: Math.atan2((eyeRight.y - eyeLeft.y) * height, (eyeRight.x - eyeLeft.x) * width), seen: now };
+          trackedHead = trackedHead ? {
+            x: trackedHead.x * .68 + target.x * .32,
+            y: trackedHead.y * .68 + target.y * .32,
+            width: trackedHead.width * .68 + target.width * .32,
+            angle: trackedHead.angle * .68 + target.angle * .32,
+            seen: now
+          } : target;
+        }
+      }
+
+      for (const piece of confetti) {
+        piece.y += piece.speed * scale;
+        piece.x += piece.drift * scale;
+        piece.spin += .08;
+        if (piece.y > height + 12) Object.assign(piece, makeConfetti());
+        context.save();
+        context.translate(piece.x, piece.y);
+        context.rotate(piece.spin);
+        context.fillStyle = piece.color;
+        context.fillRect(-piece.size * scale / 2, -piece.size * scale / 2, piece.size * scale, piece.size * scale * 1.6);
+        context.restore();
+      }
+
+      drawCake(width, height, now);
+      if (trackedHead && now - trackedHead.seen < 500) drawPartyHat(trackedHead, width, height);
+      animationFrame = requestAnimationFrame(drawEffects);
+    }
+
+    function drawPartyHat(head, width, height) {
+      const hatWidth = head.width * .9;
+      const hatHeight = hatWidth * .98;
+      context.save();
+      context.translate(head.x, head.y + head.width * .06);
+      context.rotate(head.angle);
+      const gradient = context.createLinearGradient(-hatWidth * .45, 0, hatWidth * .45, 0);
+      gradient.addColorStop(0, "#efb4cc");
+      gradient.addColorStop(.48, "#fff1f6");
+      gradient.addColorStop(1, "#dc84aa");
+      context.fillStyle = gradient;
+      context.strokeStyle = "#c85b90";
+      context.lineWidth = Math.max(2, head.width * .018);
+      context.beginPath();
+      context.moveTo(-hatWidth * .53, 0);
+      context.quadraticCurveTo(-hatWidth * .22, -hatHeight * .62, 0, -hatHeight);
+      context.quadraticCurveTo(hatWidth * .22, -hatHeight * .62, hatWidth * .53, 0);
+      context.closePath();
+      context.fill();
+      context.stroke();
+      context.fillStyle = "#ca4386";
+      context.textAlign = "center";
+      context.font = `700 ${Math.max(9, hatWidth * .115)}px Georgia, serif`;
+      context.fillText("GADIS HARI JADI", 0, -hatHeight * .3, hatWidth * .76); // EDIT TEKS
+      context.font = `italic 700 ${Math.max(12, hatWidth * .17)}px Georgia, serif`;
+      context.fillText("yeay!", 0, -hatHeight * .12, hatWidth * .68); // EDIT TEKS
+      context.strokeStyle = "#bb4380";
+      context.lineWidth = Math.max(1.5, head.width * .012);
+      for (let strand = -3; strand <= 3; strand++) {
+        const originX = strand * hatWidth * .035;
+        context.beginPath();
+        context.moveTo(originX, -hatHeight * .97);
+        context.bezierCurveTo(originX + strand * 7, -hatHeight * 1.12, originX + strand * 20, -hatHeight * 1.02, originX + strand * 30, -hatHeight * (1.12 + Math.abs(strand % 2) * .05));
+        context.stroke();
+      }
+      context.fillStyle = "#d34c8c";
+      context.beginPath();
+      context.ellipse(0, 0, hatWidth * .55, hatWidth * .075, 0, 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+
+    function drawCake(width, height, now) {
+      const center = width * .5;
+      const cakeWidth = width * .46;
+      const cakeHeight = height * .25;
+      const cakeX = center - cakeWidth / 2;
+      const cakeY = height * .72;
+      const icing = context.createLinearGradient(cakeX, cakeY, cakeX + cakeWidth, cakeY + cakeHeight);
+      icing.addColorStop(0, "#fff9ee");
+      icing.addColorStop(.48, "#f4e3d8");
+      icing.addColorStop(1, "#dfc5b9");
+      context.save();
+      context.fillStyle = "rgba(70,30,50,.22)";
+      context.beginPath();
+      context.ellipse(center, cakeY + cakeHeight * .98, cakeWidth * .62, cakeHeight * .13, 0, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = icing;
+      context.beginPath();
+      context.moveTo(cakeX, cakeY + cakeHeight * .1);
+      context.ellipse(center, cakeY + cakeHeight * .1, cakeWidth / 2, cakeHeight * .17, 0, Math.PI, 0);
+      context.lineTo(cakeX + cakeWidth, cakeY + cakeHeight * .85);
+      context.ellipse(center, cakeY + cakeHeight * .85, cakeWidth / 2, cakeHeight * .15, 0, 0, Math.PI);
+      context.closePath();
+      context.fill();
+      context.fillStyle = "#d98b91";
+      context.beginPath();
+      context.ellipse(center, cakeY + cakeHeight * .11, cakeWidth / 2, cakeHeight * .17, 0, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = "#f8e6d7";
+      context.beginPath();
+      context.ellipse(center, cakeY + cakeHeight * .1, cakeWidth * .45, cakeHeight * .125, 0, 0, Math.PI * 2);
+      context.fill();
+      for (let sprinkle = 0; sprinkle < cakeSprinkles.length; sprinkle++) {
+        const decoration = cakeSprinkles[sprinkle];
+        const x = center + Math.cos(decoration.angle) * cakeWidth * .42 * decoration.radius;
+        const y = cakeY + cakeHeight * .1 + Math.sin(decoration.angle) * cakeHeight * .11 * decoration.radius;
+        context.fillStyle = ["#df6389", "#b85c78", "#f5c364", "#fff"][sprinkle % 4];
+        context.fillRect(x, y, width * .008, height * .009);
+      }
+      for (const heart of [[.22, .43], [.49, .6], [.75, .39], [.34, .78]]) {
+        const x = cakeX + cakeWidth * heart[0];
+        const y = cakeY + cakeHeight * heart[1];
+        context.fillStyle = "#cd7180";
+        context.font = `700 ${width * .045}px Georgia, serif`;
+        context.textAlign = "center";
+        context.fillText("♥", x, y);
+      }
+      context.fillStyle = "#fff7ec";
+      context.fillRect(center - width * .012, cakeY - height * .14, width * .024, height * .17);
+      context.fillStyle = "#e6b874";
+      context.fillRect(center - width * .012, cakeY - height * .14, width * .024, height * .025);
+      if (!candleOut) drawFlame(center, cakeY - height * .14, width, height, now);
+      else drawSmoke(center, cakeY - height * .14, width, height, now);
+      context.restore();
+    }
+
+    function drawFlame(x, candleTop, width, height, now) {
+      const flicker = Math.sin(now / 57) * .018 + Math.sin(now / 31) * .008;
+      const flameHeight = height * (.073 + flicker);
+      const glow = context.createRadialGradient(x, candleTop - flameHeight * .48, 0, x, candleTop - flameHeight * .48, flameHeight * 1.8);
+      glow.addColorStop(0, "rgba(255,197,95,.5)");
+      glow.addColorStop(1, "rgba(255,197,95,0)");
+      context.fillStyle = glow;
+      context.beginPath();
+      context.arc(x, candleTop - flameHeight * .48, flameHeight * 1.8, 0, Math.PI * 2);
+      context.fill();
+      const flame = context.createLinearGradient(x, candleTop, x, candleTop - flameHeight);
+      flame.addColorStop(0, "#f28a36");
+      flame.addColorStop(.58, "#ffd36d");
+      flame.addColorStop(1, "#fff9dc");
+      context.fillStyle = flame;
+      context.beginPath();
+      context.moveTo(x, candleTop);
+      context.bezierCurveTo(x - width * .035, candleTop - flameHeight * .2, x - width * .025, candleTop - flameHeight * .65, x + Math.sin(now / 90) * width * .012, candleTop - flameHeight);
+      context.bezierCurveTo(x + width * .045, candleTop - flameHeight * .7, x + width * .035, candleTop - flameHeight * .22, x, candleTop);
+      context.fill();
+      context.fillStyle = "rgba(255,255,235,.86)";
+      context.beginPath();
+      context.ellipse(x, candleTop - flameHeight * .35, width * .009, flameHeight * .23, -.12, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    function drawSmoke(x, candleTop, width, height, now) {
+      const age = (now - candleOutAt) / 1500;
+      if (age > 1) return;
+      context.save();
+      context.globalAlpha = 1 - age;
+      context.strokeStyle = "rgba(255,245,245,.75)";
+      context.lineWidth = width * .008;
+      context.beginPath();
+      context.moveTo(x, candleTop - height * .02);
+      context.bezierCurveTo(x - width * .04, candleTop - height * .08, x + Math.sin(now / 180) * width * .03, candleTop - height * .12, x + Math.sin(now / 240) * width * .02, candleTop - height * .18);
+      context.stroke();
+      context.restore();
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, width, height, radius);
+    }
+
+    function listenForBlow(stream) {
+      if (!audioContext) {
+        blowButton.classList.remove("hidden");
+        return;
+      }
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+      const samples = new Uint8Array(analyser.fftSize);
+      const detect = () => {
+        if (!microphoneStream || songStarted) return;
+        analyser.getByteTimeDomainData(samples);
+        let energy = 0;
+        for (const sample of samples) {
+          const centered = (sample - 128) / 128;
+          energy += centered * centered;
+        }
+        const volume = Math.sqrt(energy / samples.length);
+        if (volume < ambientVolume * 1.6) ambientVolume = ambientVolume * .96 + volume * .04;
+        const blowThreshold = Math.max(.12, ambientVolume * 2.7);
+        noiseFrames = volume > blowThreshold ? noiseFrames + 1 : Math.max(0, noiseFrames - 1);
+        if (noiseFrames > 12) {
+          startSong();
+          return;
+        }
+        requestAnimationFrame(detect);
+      };
+      detect();
+    }
+
+    blowButton.addEventListener("click", startSong);
+
+    function startSong() {
+      if (songStarted) return;
+      songStarted = true;
+      candleOut = true;
+      candleOutAt = performance.now();
+      confetti = Array.from({ length: 42 }, () => makeConfetti(true));
+      birthdayStickers.classList.remove("hidden");
+      microphoneStream?.getTracks().forEach(track => track.stop());
+      microphoneStream = null;
+      blowButton.classList.add("hidden");
+      playBirthdaySong();
+    }
+
+    function playBirthdaySong() {
+      songPlayer.classList.remove("hidden");
+      downloadSong.classList.remove("hidden");
+      birthdayAudio.currentTime = 0;
+      birthdayAudio.play().catch(() => {
+        setStatus("Tekan butang main pada pemain lagu untuk mendengar."); // EDIT TEKS
+      });
+    }
+
+    function stopMedia() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+      faceLandmarker?.close();
+      faceLandmarker = null;
+      trackedHead = null;
+      songStarted = false;
+      candleOut = false;
+      confetti = [];
+      birthdayStickers.classList.add("hidden");
+      songPlayer.classList.add("hidden");
+      downloadSong.classList.add("hidden");
+      birthdayAudio.pause();
+      birthdayAudio.currentTime = 0;
+      cameraStream?.getTracks().forEach(track => track.stop());
+      microphoneStream?.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+      microphoneStream = null;
+      video.srcObject = null;
+      placeholder.hidden = false;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    retryButton.addEventListener("click", async () => {
+      retryButton.classList.add("hidden");
+      blowButton.classList.add("hidden");
+      setStatus("Sedang cuba membuka kamera semula…"); // EDIT TEKS
+      await startCamera();
+    });
+
+    const runaway = document.querySelector("#runaway-button");
+    function runAway(event) {
+      const rect = runaway.getBoundingClientRect();
+      const padding = 16;
+      let left = padding;
+      let top = padding;
+      for (let attempt = 0; attempt < 20; attempt++) {
+        left = padding + Math.random() * Math.max(0, window.innerWidth - rect.width - padding * 2);
+        top = padding + Math.random() * Math.max(0, window.innerHeight - rect.height - padding * 2);
+        const farEnough = !event || Math.hypot(left + rect.width / 2 - event.clientX, top + rect.height / 2 - event.clientY) > 140;
+        if (farEnough) break;
+      }
+      runaway.style.position = "fixed";
+      runaway.style.left = `${left}px`;
+      runaway.style.top = `${top}px`;
+      runaway.style.zIndex = "5";
+    }
+    runaway.addEventListener("pointerenter", runAway);
+    runaway.addEventListener("pointerdown", runAway);
+    runaway.addEventListener("focus", runAway);
+    window.addEventListener("resize", () => {
+      if (runaway.style.position === "fixed") runAway();
+    });
+  </script>
+</body>
+</html>
